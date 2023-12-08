@@ -1,0 +1,112 @@
+\\*********************************************************************
+\\This program was created by using Arduino IDE
+\\Project : Secret Military Tunnel Monitoring Robot
+\\Chip type : ESP8266
+\\ESP8266 clock frequency is 80MHz
+\\**********************************************************************
+#include<ESP8266WiFi.h>
+#include<ESP8266WebServer.h>
+ESP8266WebServer smtmr(80);
+const char *ssid = "AS";
+const char *password = "123456789";
+const int Mdec = D4;
+String page="<center><h1>Secret Military Tunnel Monitoring </h1><body><p><a
+href=\"FORWARD\"><button>Forward</button></a><a
+href=\"BACKWARD\"><button>Backward</button></a></p><p> <a href = \"LEFT\">
+<button> Left</button></a> <a href = \" RIGHT\"> <button> Right</button></a> </p> <p>
+<a href = \"STOP\"> <button> Stop</button> </a> </p> <p> <a href = \"sensor\" <button>
+Sensor </button> </a> </p></body>";
+void setup() {
+pinMode(D5,OUTPUT);
+pinMode(D6,OUTPUT);
+pinMode(D7,OUTPUT);
+pinMode(D8,OUTPUT);
+pinMode(Mdec,INPUT);
+Serial.begin(115200);
+WiFi.softAP(ssid,password);
+Serial.print(WiFi.softAPIP());
+smtmr.begin();
+smtmr.on("/",webpage);
+smtmr.on("/FORWARD",Forward);
+smtmr.on("/BACKWARD",Backward);
+smtmr.on("/LEFT",Left);
+smtmr.on("/RIGHT",Right);
+smtmr.on("/STOP",Stop);
+smtmr.on("/sensor",sensor);
+}
+void webpage() {
+smtmr.send(200,"text/html",page);
+}
+
+void Forward(){
+digitalWrite(D5,HIGH);
+digitalWrite(D6,LOW);
+digitalWrite(D7,HIGH);
+digitalWrite(D8,LOW);
+Serial.print("F");
+String page1= "<p> MOTOR Status : Motor is in forward direction </p>";
+smtmr.send(200,"text/html",page+page1);
+}
+
+void Backward(){
+digitalWrite(D5,LOW);
+digitalWrite(D6,HIGH);
+digitalWrite(D7,LOW);
+digitalWrite(D8,HIGH);
+Serial.print("B");
+
+String page2= "<p> MOTOR Status : Motor is in backward direction </p>";
+smtmr.send(200,"text/html",page+page2);
+}
+
+void Left(){
+digitalWrite(D5,LOW);
+digitalWrite(D6,LOW);
+digitalWrite(D7,HIGH);
+digitalWrite(D8,LOW);
+Serial.print("L");
+
+String page3= "<p> MOTOR Status : Motor turns left </p>";
+smtmr.send(200,"text/html",page+page3);
+}
+
+void Right(){
+digitalWrite(D5,HIGH);
+digitalWrite(D6,LOW);
+digitalWrite(D7,LOW);
+digitalWrite(D8,LOW);
+Serial.print("R");
+
+String page4= "<p> MOTOR Status : Motor turns right </p>";
+smtmr.send(200,"text/html",page+page4);
+}
+
+void Stop(){
+digitalWrite(D5,LOW);
+digitalWrite(D6,LOW);
+digitalWrite(D7,LOW);
+digitalWrite(D8,LOW);
+Serial.print("S");
+
+String page5= "<p> MOTOR Status : Motor Stops </p>";
+smtmr.send(200,"text/html",page+page5);
+}
+void sensor(){
+int sensorvalue;
+sensorvalue = digitalRead(D4);
+if(sensorvalue == LOW){
+String page6 = "<p> Tunnel Status : Tunnel is Blocked </p>";
+smtmr.send(200,"text/html",page+page6);
+Serial.print("Tunnel is Blocked");
+}
+else {
+String page7 = "<p> Tunnel Status : Tunnel is clear </p>";
+smtmr.send(200,"text/html",page+page7);
+Serial.print("Tunnel is clear");
+}
+}
+
+void loop() {
+smtmr.handleClient();
+
+}
