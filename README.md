@@ -1,4 +1,4 @@
-# SECRET-MILITARY-TUNNLE-MONITORING-ROBOT
+
 # Secret Military Tunnel Monitoring Robot
 
 ## Project Overview
